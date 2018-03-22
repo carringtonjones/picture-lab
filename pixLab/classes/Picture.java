@@ -84,7 +84,33 @@ public class Picture extends SimplePicture
     return output;
     
   }
-  
+  /** Method to set the blue to 0 */
+  public void keepOnlyBlue()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    for (Pixel[] rowArray : pixels)
+    {
+      for (Pixel pixelObj : rowArray)
+      {
+        pixelObj.setRed(0);
+        pixelObj.setGreen(0);
+      }
+    }
+  }
+  /** Method to set the blue to 0 */
+  public void negate()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    for (Pixel[] rowArray : pixels)
+    {
+      for (Pixel pixelObj : rowArray)
+      {
+        pixelObj.setRed(pixelObj.getRed() - 255);
+        pixelObj.setGreen(pixelObj.getGreen() - 255);
+        pixelObj.setBlue(pixelObj.getBlue() - 255);
+      }
+    }
+  }
   /** Method to set the blue to 0 */
   public void zeroBlue()
   {
@@ -96,6 +122,40 @@ public class Picture extends SimplePicture
         pixelObj.setBlue(0);
       }
     }
+  }
+  /** Method to set the blue to 0 */
+  public void greyscale()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    for (Pixel[] rowArray : pixels)
+    {
+      for (Pixel pixelObj : rowArray)
+      {
+        pixelObj.setRed((pixelObj.getRed() + pixelObj.getGreen() + pixelObj.getBlue()) / 3);
+        pixelObj.setGreen((pixelObj.getRed() + pixelObj.getGreen() + pixelObj.getBlue()) / 3);
+        pixelObj.setBlue((pixelObj.getRed() + pixelObj.getGreen() + pixelObj.getBlue()) / 3);
+      }
+    }
+  }
+  
+   /** Method that mirrors the picture around a 
+    * vertical mirror in the center of the picture
+    * from left to right */
+  public void mirrorVerticalRightToLeft()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    Pixel leftPixel = null;
+    Pixel rightPixel = null;
+    int width = pixels[0].length;
+    for (int row = 0; row < pixels.length; row++)
+    {
+      for (int col = 0; col < width; col++)
+      {
+        leftPixel = pixels[row][width - 1 - col];
+        rightPixel = pixels[row][col];
+        rightPixel.setColor(leftPixel.getColor());
+      }
+    } 
   }
   
   /** Method that mirrors the picture around a 
@@ -133,13 +193,32 @@ public class Picture extends SimplePicture
       // loop from 13 to just before the mirror point
       for (int col = 13; col < mirrorPoint; col++)
       {
-        
+        count++;
         leftPixel = pixels[row][col];      
         rightPixel = pixels[row]                       
                          [mirrorPoint - col + mirrorPoint];
         rightPixel.setColor(leftPixel.getColor());
       }
     }
+    System.out.println(count);
+  }
+  //Diagonal mirroring
+    public void mirrorDiagonal()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    Pixel leftPixel = null;
+    Pixel rightPixel = null;
+    int width = pixels[0].length;
+    
+    for (int row = 0; row < pixels.length; row++)
+    {
+      for (int col = 0; col < width / 2; col++)
+      {
+        leftPixel = pixels[row][width - 1 - col];
+        rightPixel = pixels[row][col];
+        rightPixel.setColor(leftPixel.getColor());
+      }
+    } 
   }
   
   /** copy from the passed fromPic to the
@@ -150,7 +229,7 @@ public class Picture extends SimplePicture
     * @param startCol the start col to copy to
     */
   public void copy(Picture fromPic, 
-                 int startRow, int startCol)
+                 int startRow, int startCol, int endRow, int endCol)
   {
     Pixel fromPixel = null;
     Pixel toPixel = null;
@@ -172,7 +251,7 @@ public class Picture extends SimplePicture
       }
     }   
   }
-
+  
   /** Method to create a collage of several pictures */
   public void createCollage()
   {
@@ -189,7 +268,24 @@ public class Picture extends SimplePicture
     this.mirrorVertical();
     this.write("collage.jpg");
   }
-  
+
+  /** Method to create a collage of several pictures */
+  public void myCollage()
+  {
+    Picture redMotorcycle = new Picture("redMotorcycle.jpg");
+    Picture snowman = new Picture("snowman.jpg");
+    Picture koala = new Picture ("koala.jpg");
+    this.copy(redMotorcycle,0,0);
+    this.copy(snowman,100,0);
+    this.copy(koala,200,0);
+    Picture flowerNoBlue = new Picture(koala);
+    flowerNoBlue.zeroBlue();
+    this.copy(flowerNoBlue,300,0);
+    this.copy(snowman,400,0);
+    this.copy(redMotorcycle,500,0);
+    this.mirrorVertical();
+    this.write("collage.jpg");
+  }
   
   /** Method to show large changes in color 
     * @param edgeDist the distance for finding edges
@@ -200,6 +296,9 @@ public class Picture extends SimplePicture
     Pixel rightPixel = null;
     Pixel[][] pixels = this.getPixels2D();
     Color rightColor = null;
+    Pixel topPixel = null;
+    Pixel bottomPixel = null;
+    Pixel[][] pixels = this.getPixels2D();
     for (int row = 0; row < pixels.length; row++)
     {
       for (int col = 0; 
@@ -215,6 +314,24 @@ public class Picture extends SimplePicture
           leftPixel.setColor(Color.WHITE);
       }
     }
+  
+      for (int row = 0; row < pixels.length-1; row++)
+      {
+          for (int col = 0; 
+               col < pixels[0].length; col++)
+          {
+            topPixel = pixels[row][col];
+            bottomPixel = pixels[row+1][col];
+            bottomColor = bottomPixel.getColor();
+            
+            if (topPixel.colorDistance(bottomColor) > 
+                edgeDist)
+              topPixel.setColor(Color.BLACK);
+            else
+              topPixel.setColor(Color.WHITE);
+          }
+    }
+    
   }
   
   
