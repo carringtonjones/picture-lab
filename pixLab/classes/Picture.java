@@ -97,7 +97,6 @@ public class Picture extends SimplePicture
       }
     }
   }
-
  /** Method to set the blue to 0 */
   public void keepOnlyBlue()
   {
@@ -219,7 +218,7 @@ public class Picture extends SimplePicture
     int totalPixels = 0;
     
     int maxRed = 0;
-    int minRed = 255;
+    int minRed = 25;
     int maxGreen = 0;
     int minGreen = 255;
     int maxBlue = 0;

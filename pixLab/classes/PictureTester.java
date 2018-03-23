@@ -35,11 +35,11 @@ public class PictureTester
   
   public static void testFixUnderwater()
   {
-    Picture fishes = new Picture("water.jpg");
-    fishes.explore();
-    fishes.fixUnderwater();
+    Picture fish = new Picture("water.jpg");
+    fish.explore();
+    fish.fixUnderwater();
     System.out.println("UnderWater Fixed");
-    fishes.explore();
+    fish.explore();
   }
 
   /** Method to test mirrorVertical */
