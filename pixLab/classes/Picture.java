@@ -218,7 +218,7 @@ public class Picture extends SimplePicture
     int totalPixels = 0;
     
     int maxRed = 0;
-    int minRed = 25;
+    int minRed = 255;
     int maxGreen = 0;
     int minGreen = 255;
     int maxBlue = 0;
