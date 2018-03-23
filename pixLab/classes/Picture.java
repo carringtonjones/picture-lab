@@ -111,6 +111,32 @@ public class Picture extends SimplePicture
       }
     }
   }
+ /** Method to set the red to 0 */
+  public void keepOnlyRed()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    for (Pixel[] rowArray : pixels)
+    {
+      for (Pixel pixelObj : rowArray)
+      {
+         pixelObj.setBlue(0);
+         pixelObj.setGreen(0);
+      }
+    }
+  }
+ /** Method to se the green to 0 */
+ public void keepOnlyGreen()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    for (Pixel[] rowArray : pixels)
+    {
+      for (Pixel pixelObj : rowArray)
+      {
+         pixelObj.setBlue(0);
+         pixelObj.setRed(0);
+      }
+    }
+  }
 
    /** Method to set the blue to 0 */
   public void negate()
@@ -141,7 +167,127 @@ public class Picture extends SimplePicture
       }
     }
   }
+  /** Method that inverts the picture */
+   public void invert()
+  {
+      Pixel[][] pixels = this.getPixels2D();
+      for (int row = 0; row < pixels.length; row++)
+      {
+          for (int col = 0; col < pixels[0].length; col++)
+          {
+              int red = 255 - pixels[row][col].getRed();
+              int green = 255 - pixels[row][col].getGreen();
+              int blue = 255 - pixels[row][col].getBlue();
+              
+              Color newColor = new Color(red, green, blue);
+              
+              pixels[row][col].setColor(newColor);
+          }
+      }
+  }
+  /** Method that darkens the picture */
+  public void darken(int amount)
+  {
+      Pixel[][] pixels = this.getPixels2D();
+      for (int row = 0; row < pixels.length; row++)
+      {
+          for (int col = 0; col < pixels[0].length; col++)
+          {
+              int red = pixels[row][col].getRed() - amount;
+              int green = pixels[row][col].getGreen() - amount;
+              int blue = pixels[row][col].getBlue() - amount;
+              
+              Color newColor = new Color(red, green, blue);
+              
+              pixels[row][col].setColor(newColor);
+          }
+      }
+  }
+  /** Method to fix the fish */
+  /**
+   * Takes a sample and adjust the image
+   * to better see the fish
+   */
   
+  public void fixUnderwater()
+  {
+    Pixel[][] pixels = this.getPixels2D();
+    
+    int redAverage = 0;
+    int greenAverage = 0;
+    int blueAverage = 0;
+    int totalPixels = 0;
+    
+    int maxRed = 0;
+    int minRed = 255;
+    int maxGreen = 0;
+    int minGreen = 255;
+    int maxBlue = 0;
+    int minBlue = 255;
+    
+    
+    for (int row = 26; row < 36; row++)
+    {
+        for (int col = 178; col < 198; col++)
+        {
+            totalPixels++;
+            
+            Pixel myPixel = pixels[row][col];
+            
+            redAverage += myPixel.getRed();
+            greenAverage += myPixel.getGreen();
+            blueAverage += myPixel.getBlue();
+            
+            if (myPixel.getRed() > maxRed) { maxRed = myPixel.getRed(); }
+            if (myPixel.getRed() < minRed) { minRed = myPixel.getRed(); }
+            if (myPixel.getGreen() > maxGreen) { maxGreen = myPixel.getGreen(); }
+            if (myPixel.getGreen() < minGreen) { minGreen = myPixel.getGreen(); }
+            if (myPixel.getBlue() > maxBlue) { maxBlue = myPixel.getBlue(); }
+            if (myPixel.getGreen() < minBlue) { minBlue = myPixel.getBlue(); }
+            
+        }
+    }
+    
+    redAverage = redAverage / totalPixels;
+    greenAverage = greenAverage / totalPixels;
+    blueAverage = blueAverage / totalPixels;
+    
+    Color averageColor = new Color(redAverage, greenAverage, blueAverage);
+    
+    int redRange = (maxRed - minRed);
+    int greenRange = (maxGreen - minGreen);
+    int blueRange = (maxBlue - minBlue);
+    
+    int redDistance = redRange;
+    int greenDistance = greenRange;
+    int blueDistance = blueRange;
+    
+    double maxDistance = Math.sqrt(redDistance * redDistance +
+                                   greenDistance * greenDistance +
+                                   blueDistance * blueDistance);
+    
+    double tolerance = 1.7;
+    
+    for (int row = 0; row < pixels.length; row++)
+    {
+      for (int col = 0; col < pixels[0].length; col++)
+      {
+          Pixel myPixel = pixels[row][col]; 
+          
+          boolean closeEnough = myPixel.colorDistance(averageColor) < maxDistance * tolerance; // stopped here, define this***
+          
+          if (closeEnough)
+          {
+              myPixel.setBlue(myPixel.getBlue() + 50);
+          }
+          else
+          {
+              myPixel.setBlue(myPixel.getBlue() - 50);
+          }
+      }
+    }
+  }
+ 
   /** Method that mirrors the picture around a 
     * vertical mirror in the center of the picture
     * from left to right */
@@ -194,7 +340,6 @@ public class Picture extends SimplePicture
     // loop through the rows
     for (int row = 27; row < 97; row++)
     {
-      // loop from 13 to just before the mirror point
       for (int col = 13; col < mirrorPoint; col++)
       {
         count++;

@@ -32,6 +32,16 @@ public class PictureTester
     beach.greyscale();
     beach.explore();
   }
+  
+  public static void testFixUnderwater()
+  {
+    Picture fishes = new Picture("water.jpg");
+    fishes.explore();
+    fishes.fixUnderwater();
+    System.out.println("UnderWater Fixed");
+    fishes.explore();
+  }
+
   /** Method to test mirrorVertical */
   public static void testMirrorVertical()
   {
